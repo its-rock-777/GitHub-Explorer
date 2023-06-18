@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GitHub Explorer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333333;
+    }
+
+    form {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    #search-input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+    }
+
+    button[type="submit"] {
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .repository {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+    }
+
+    .repository h3 {
+      margin: 0;
+      color: #333333;
+    }
+
+    .repository p {
+      margin: 5px 0;
+      color: #666666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>GitHub Explorer</h2>
+    <form id="search-form">
+      <input type="text" id="search-input" placeholder="Enter a GitHub username">
+      <button type="submit">Search</button>
+    </form>
+    <div id="repositories"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('search-form');
+    const input = document.getElementById('search-input');
+    const repositoriesContainer = document.getElementById('repositories');
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const username = input.value;
+      fetchRepositories(username);
+    });
+
+    function fetchRepositories(username) {
+      const url = `https://api.github.com/users/${username}/repos`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          displayRepositories(data);
+        })
+        .catch(error => {
+          console.log('Error:', error);
+        });
+    }
+
+    function displayRepositories(repositories) {
+      repositoriesContainer.innerHTML = '';
+
+      repositories.forEach(repository => {
+        const repoItem = document.createElement('div');
+        repoItem.classList.add('repository');
+        repoItem.innerHTML = `
+          <h3>${repository.name}</h3>
+          <p>${repository.description}</p>
+          <p>Language: ${repository.language}</p>
+          <p>Stars: ${repository.stargazers_count}</p>
+          <p>Forks: ${repository.forks_count}</p>
+        `;
+
+        repositoriesContainer.appendChild(repoItem);
+      });
+    }
+  </script>
+</body>
+</html>
